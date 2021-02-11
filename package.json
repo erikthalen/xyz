@@ -1,0 +1,29 @@
+{
+  "name": "xyz",
+  "version": "1.0.0",
+  "description": "To formulate and develop a project that will act as a learning as well as a showcase to our peers.",
+  "type": "module",
+  "scripts": {
+    "clear": "rm -rf dist",
+    "start": "yarn clear & parcel serve ./index.html",
+    "build": "yarn clear & parcel build ./index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erikthalen/xyz.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/erikthalen/xyz/issues"
+  },
+  "homepage": "https://github.com/erikthalen/xyz#readme",
+  "dependencies": {
+    "gsap": "^3.6.0",
+    "three": "^0.125.2"
+  },
+  "devDependencies": {
+    "parcel": "^2.0.0-beta.1"
+  }
+}
