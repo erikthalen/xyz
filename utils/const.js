@@ -8,5 +8,6 @@ export const COLOR = {
   PURPLE: 0xbdb2ff,
   LILAC: 0xffc6ff,
   WHITE: 0xfffffc,
-  GREY: 0xececec
+  GREY: 0xececec,
+  BLACK: 0x232323,
 }
