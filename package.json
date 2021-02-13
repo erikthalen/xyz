@@ -2,7 +2,6 @@
   "name": "xyz",
   "version": "1.0.0",
   "description": "To formulate and develop a project that will act as a learning as well as a showcase to our peers.",
-  "type": "module",
   "scripts": {
     "clear": "rm -rf dist",
     "start": "yarn clear & parcel serve ./index.html",
@@ -20,6 +19,7 @@
   },
   "homepage": "https://github.com/erikthalen/xyz#readme",
   "dependencies": {
+    "dat.gui": "^0.7.7",
     "gsap": "^3.6.0",
     "three": "^0.125.2"
   },

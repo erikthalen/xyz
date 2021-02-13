@@ -11,3 +11,10 @@ export const COLOR = {
   GREY: 0xececec,
   BLACK: 0x232323,
 }
+
+export const SCREEN_SIZE = () => ({
+  width: window.innerWidth,
+  height: window.innerHeight,
+})
+
+export const HPD = true

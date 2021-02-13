@@ -1,21 +1,10 @@
 import * as THREE from 'three'
-import { COLOR } from '~/utils/const'
-import { onResize, enableFullscreen } from '~/utils/events'
+import { COLOR, SCREEN_SIZE, HPD } from '~/utils/const'
+import { keepFullscreen } from '~/utils/events'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 // sizes
-const screenSize = () => ({
-  width: window.innerWidth,
-  height: window.innerHeight,
-})
-let sizes = screenSize()
-
-onResize(() => {
-  sizes = screenSize()
-  camera.aspect = sizes.width / sizes.height
-  camera.updateProjectionMatrix()
-  renderer.setSize(...Object.values(sizes))
-})
+let sizes = SCREEN_SIZE()
 
 // scene
 const scene = new THREE.Scene()
@@ -23,12 +12,16 @@ scene.background = new THREE.Color(COLOR.WHITE)
 
 // cube
 const geometry = new THREE.BufferGeometry()
+let positionsArray = new Float32Array(500 * 3 * 3)
 
-const count = 500
-let positionsArray = new Float32Array(count * 3 * 3)
-
+/**
+ * position the verticies randomly
+ */
 positionsArray = positionsArray.map(() => (Math.random() - 0.5) * 4)
 
+/**
+ * apply the positions as a buffer, to the geometry
+ */
 const positionsAttributes = new THREE.BufferAttribute(positionsArray, 3)
 geometry.setAttribute('position', positionsAttributes)
 
@@ -51,12 +44,16 @@ camera.lookAt(mesh.position)
 const canvas = document.querySelector('.webgl')
 const renderer = new THREE.WebGLRenderer({ canvas })
 renderer.setSize(...Object.values(sizes))
-// renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.setPixelRatio(Math.min(HPD ? window.devicePixelRatio : 1, 2))
 renderer.render(scene, camera)
 
 // controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
+
+keepFullscreen(camera, renderer, () => {
+  sizes = SCREEN_SIZE()
+})
 
 const tick = () => {
   controls.update()

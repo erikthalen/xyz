@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import gsap from 'gsap'
-import { COLOR } from '~/utils/const'
+import { COLOR, HPD } from '~/utils/const'
 
 // scene
 const scene = new THREE.Scene()
@@ -28,7 +28,7 @@ scene.add(camera)
 // renderer
 const canvas = document.querySelector('.webgl')
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
-// renderer.setPixelRatio(window.devicePixelRatio)
+renderer.setPixelRatio(Math.min(HPD ? window.devicePixelRatio : 1, 2))
 renderer.setSize(...Object.values(sizes))
 renderer.render(scene, camera)
 

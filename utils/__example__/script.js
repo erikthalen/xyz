@@ -1,12 +1,12 @@
 import * as THREE from 'three'
-import { COLOR } from '~/utils/const'
+import { COLOR, SCREEN_SIZE, HPD } from '~/utils/const'
+import { enableFullscreen, keepFullscreen } from '~/utils/events'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import gsap from 'gsap'
+import * as dat from 'dat.gui'
 
 // sizes
-const sizes = {
-  width: 800,
-  height: 600,
-}
+let sizes = SCREEN_SIZE()
 
 // scene
 const scene = new THREE.Scene()
@@ -31,9 +31,15 @@ camera.lookAt(mesh.position)
 
 // renderer
 const canvas = document.querySelector('.webgl')
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
+const renderer = new THREE.WebGLRenderer({ canvas })
 renderer.setSize(...Object.values(sizes))
+renderer.setPixelRatio(Math.min(HPD ? window.devicePixelRatio : 1, 2))
 renderer.render(scene, camera)
+
+// fullscreen on dblclick
+enableFullscreen(canvas)
+// keep renderer same size as viewport
+keepFullscreen(camera, renderer, () => (sizes = SCREEN_SIZE()))
 
 // controls
 const controls = new OrbitControls(camera, canvas)

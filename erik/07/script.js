@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { COLOR } from '~/utils/const'
+import { COLOR, HPD } from '~/utils/const'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 // sizes
@@ -35,6 +35,7 @@ camera.lookAt(mesh.position)
 const canvas = document.querySelector('.webgl')
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
 renderer.setSize(...Object.values(sizes))
+renderer.setPixelRatio(Math.min(HPD ? window.devicePixelRatio : 1, 2))
 renderer.render(scene, camera)
 
 // controls
