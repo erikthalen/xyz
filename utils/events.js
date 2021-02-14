@@ -10,7 +10,7 @@ export const onResize = cb => {
   window.addEventListener('resize', cb)
 }
 
-export const keepFullscreen = (camera, renderer, cb) => {
+export const enableFullViewportOnResize = (camera, renderer, cb) => {
   onResize(() => {
     const { width, height } = SCREEN_SIZE()
     camera.aspect = width / height
@@ -25,7 +25,7 @@ export const onDblclick = cb => {
   window.addEventListener('dblclick', cb)
 }
 
-export const enableFullscreen = canvas => {
+export const enableFullscreenOnDoubleClick = canvas => {
   onDblclick(() => {
     if (!(document.fullscreenElement || document.webkitFullscreenElement)) {
       if (canvas.requestFullscreen) {

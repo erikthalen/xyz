@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { COLOR, HPD } from '~/utils/const'
-import { onResize, enableFullscreen } from '~/utils/events'
+import { onResize, enableFullscreenOnDoubleClick } from '~/utils/events'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 // sizes
@@ -47,7 +47,7 @@ renderer.setPixelRatio(Math.min(HPD ? window.devicePixelRatio : 1, 2))
 renderer.render(scene, camera)
 
 // fullscreen on dblclick
-enableFullscreen(canvas)
+enableFullscreenOnDoubleClick(canvas)
 
 // controls
 const controls = new OrbitControls(camera, canvas)

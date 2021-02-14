@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { COLOR, SCREEN_SIZE, HPD } from '~/utils/const'
-import { keepFullscreen } from '~/utils/events'
+import { enableFullViewportOnResize } from '~/utils/events'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 // sizes
@@ -51,7 +51,7 @@ renderer.render(scene, camera)
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 
-keepFullscreen(camera, renderer, () => {
+enableFullViewportOnResize(camera, renderer, () => {
   sizes = SCREEN_SIZE()
 })
 

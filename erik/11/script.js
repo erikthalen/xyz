@@ -1,33 +1,27 @@
 import * as THREE from 'three'
 import { COLOR, SCREEN_SIZE, HPD } from '~/utils/const'
-import { enableFullscreen, keepFullscreen } from '~/utils/events'
+import { enableFullscreenOnDoubleClick, enableFullViewportOnResize } from '~/utils/events'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import gsap from 'gsap'
-import * as dat from 'dat.gui'
 
-import colorSrc from 'url:./textures/door/color.jpg'
-import alphaSrc from 'url:./textures/door/alpha.jpg'
-import heightSrc from 'url:./textures/door/height.jpg'
-import normalSrc from 'url:./textures/door/normal.jpg'
-import ambientOcclusionSrc from 'url:./textures/door/ambientOcclusion.jpg'
-import metalnessSrc from 'url:./textures/door/metalness.jpg'
-import roughnessSrc from 'url:./textures/door/roughness.jpg'
+import textureSrc from 'url:./textures/minecraft.png'
 
 // textures
 const loadingManager = new THREE.LoadingManager()
 const textureLoader = new THREE.TextureLoader(loadingManager)
-const colorTexture = textureLoader.load(colorSrc)
-const alphaTexture = textureLoader.load(alphaSrc)
-const heightTexture = textureLoader.load(heightSrc)
-const normalTexture = textureLoader.load(normalSrc)
-const ambientOcclusionTexture = textureLoader.load(ambientOcclusionSrc)
-const metalnessTexture = textureLoader.load(metalnessSrc)
-const roughnessTexture = textureLoader.load(roughnessSrc)
+const colorTexture = textureLoader.load(textureSrc)
+const colorTexture2 = textureLoader.load(textureSrc)
 
-colorTexture.repeat.x = 3
-colorTexture.repeat.y = 3
-colorTexture.wrapS = THREE.RepeatWrapping
-colorTexture.wrapT = THREE.MirroredRepeatWrapping
+// colorTexture.repeat.x = 3
+// colorTexture.repeat.y = 3
+// colorTexture.wrapS = THREE.RepeatWrapping
+// colorTexture.wrapT = THREE.MirroredRepeatWrapping
+
+// colorTexture.center.x = 0.5
+// colorTexture.center.y = 0.5
+// colorTexture.rotation = Math.PI * 0.25
+
+// colorTexture.minFilter = THREE.NearestFilter
+colorTexture.magFilter = THREE.NearestFilter
 
 loadingManager.onStart = () => { console.log('onStart') }
 loadingManager.onLoaded = () => { console.log('onLoaded') }
@@ -41,11 +35,18 @@ let sizes = SCREEN_SIZE()
 const scene = new THREE.Scene()
 scene.background = new THREE.Color(COLOR.WHITE)
 
-// red cube
+// cube
 const geometry = new THREE.BoxGeometry(1, 1, 1)
 const material = new THREE.MeshBasicMaterial({ map: colorTexture })
 const mesh = new THREE.Mesh(geometry, material)
 scene.add(mesh)
+mesh.position.x = 0.66
+
+const geometry2 = new THREE.BoxGeometry(1, 1, 1)
+const material2 = new THREE.MeshBasicMaterial({ map: colorTexture2 })
+const mesh2 = new THREE.Mesh(geometry2, material2)
+scene.add(mesh2)
+mesh2.position.x = -0.66
 
 // camera
 const camera = new THREE.PerspectiveCamera(
@@ -66,9 +67,9 @@ renderer.setPixelRatio(Math.min(HPD ? window.devicePixelRatio : 1, 2))
 renderer.render(scene, camera)
 
 // fullscreen on dblclick
-enableFullscreen(canvas)
+enableFullscreenOnDoubleClick(canvas)
 // keep renderer same size as viewport
-keepFullscreen(camera, renderer, () => (sizes = SCREEN_SIZE()))
+enableFullViewportOnResize(camera, renderer, () => (sizes = SCREEN_SIZE()))
 
 // controls
 const controls = new OrbitControls(camera, canvas)

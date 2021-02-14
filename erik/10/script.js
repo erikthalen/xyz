@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { COLOR, SCREEN_SIZE, HPD } from '~/utils/const'
-import { keepFullscreen } from '~/utils/events'
+import { enableFullViewportOnResize } from '~/utils/events'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 import gsap from 'gsap'
@@ -67,7 +67,7 @@ renderer.render(scene, camera)
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 
-keepFullscreen(camera, renderer, () => (sizes = SCREEN_SIZE()))
+enableFullViewportOnResize(camera, renderer, () => (sizes = SCREEN_SIZE()))
 
 const tick = () => {
   controls.update()
