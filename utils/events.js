@@ -6,6 +6,18 @@ export const onMousemove = cb => {
   })
 }
 
+/**
+ * mouse(({x, y}) => console.log(x, y)) // -1 - 1
+ */
+export const mouse = cb => {
+  window.addEventListener('mousemove', ({ clientX, clientY }) => {
+    cb({
+      x: (clientX / SCREEN_SIZE().width) * 2 - 1,
+      y: - (clientY / SCREEN_SIZE().height) * 2 + 1,
+    })
+  })
+}
+
 export const onResize = cb => {
   window.addEventListener('resize', cb)
 }
