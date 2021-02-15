@@ -17,4 +17,4 @@ export const SCREEN_SIZE = () => ({
   height: window.innerHeight,
 })
 
-export const HPD = false
+export const HPD = true

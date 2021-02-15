@@ -77,7 +77,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 )
-camera.position.set(0, 0, 6)
+camera.position.set(-3, 5, 10)
 scene.add(camera)
 camera.lookAt(mesh2.position)
 

@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/erikthalen/xyz#readme",
   "dependencies": {
-    "cannon": "^0.6.2",
+    "cannon-es": "^0.16.0",
     "dat.gui": "^0.7.7",
     "gsap": "^3.6.0",
     "three": "^0.125.2"

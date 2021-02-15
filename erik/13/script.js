@@ -5,6 +5,7 @@ import {
   enableFullViewportOnResize,
 } from '~/utils/events'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js'
 import * as dat from 'dat.gui'
 
 import colorSrc from 'url:./textures/door/color.jpg'
@@ -148,7 +149,7 @@ enableFullscreenOnDoubleClick(canvas)
 enableFullViewportOnResize(camera, renderer, () => (sizes = SCREEN_SIZE()))
 
 // controls
-const controls = new OrbitControls(camera, canvas)
+const controls = new TrackballControls(camera, canvas)
 controls.enableDamping = true
 
 const clock = new THREE.Clock()
