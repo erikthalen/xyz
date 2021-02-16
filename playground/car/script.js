@@ -2,9 +2,15 @@ import * as THREE from 'three'
 import * as CANNON from 'cannon-es'
 import { COLOR, SCREEN_SIZE, HPD } from '~/utils/const'
 import { enableFullViewportOnResize } from '~/utils/events'
+import { throttle } from '~/utils/throttle'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import * as dat from 'dat.gui'
+import soundSrc from 'url:./sounds/hit.mp3'
+import startupSrc from 'url:./sounds/startup.mp3'
+import drivingSrc from 'url:./sounds/driving.mp3'
+import tireSrc from 'url:./sounds/tire.mp3'
+import { CameraHelper } from 'three'
 
 // globals
 let s = SCREEN_SIZE()
@@ -12,14 +18,18 @@ let chassisBody = null
 let box = null
 let car = null
 let objectsToUpdate = []
+let mixer = null
+let isSliding = false
 
 // debug
-// const gui = new dat.GUI()
 const parameters = {
   width: 2.2,
   height: 2.25,
   depth: 4.85,
+  engineForce: 300,
+  maxSteerVal: 0.8,
 }
+const gui = new dat.GUI()
 
 // const updateCarSize = () => {
 //   console.log(chassisBody, box)
@@ -41,17 +51,38 @@ const parameters = {
 // gui.add(parameters, 'width').min(0).max(20).step(0.01).onChange(updateCarSize)
 // gui.add(parameters, 'height').min(0).max(20).step(0.01).onChange(updateCarSize)
 // gui.add(parameters, 'depth').min(0).max(20).step(0.01).onChange(updateCarSize)
+gui.add(parameters, 'engineForce').min(0).max(2000).step(1)
+gui.add(parameters, 'maxSteerVal').min(0).max(1.2).step(0.01)
+
+/**
+ * SOUND
+ */
+const startupSound = new Audio(startupSrc)
+const drivingSound = new Audio(drivingSrc)
+const tireSound = new Audio(tireSrc)
+const sound = new Audio(soundSrc)
+const play = throttle(impactStrength => {
+  sound.volume = Math.min(impactStrength / 20, 1)
+  sound.currentTime = 0
+  sound.play()
+}, 50)
+function playSound(collision) {
+  const impactStrength = collision.contact.getImpactVelocityAlongNormal()
+  if (impactStrength > 1.5) {
+    play(impactStrength)
+  }
+}
 
 // canvas
 const canvas = document.querySelector('canvas.webgl')
 
 // scene
 const scene = new THREE.Scene()
-scene.background = new THREE.Color(COLOR.GREY)
+scene.background = new THREE.Color(COLOR.WHITE)
 
 // camera
 const camera = new THREE.PerspectiveCamera(45, s.width / s.height, 0.1, 1000)
-camera.position.set(10, 20, -20)
+camera.position.set(40, 40, -40)
 camera.lookAt(0, 0, 0)
 scene.add(camera)
 
@@ -81,19 +112,22 @@ plane.receiveShadow = true
 plane.rotation.x = Math.PI * 0.5
 scene.add(plane)
 
-const ambientLight = new THREE.AmbientLight(COLOR.WHITE, 0.6)
+const ambientLight = new THREE.AmbientLight(COLOR.WHITE, 0.5)
 scene.add(ambientLight)
-var directionalLight = new THREE.DirectionalLight(COLOR.WHITE, 0.4)
+var directionalLight = new THREE.DirectionalLight(COLOR.WHITE, 0.7)
 directionalLight.castShadow = true
 directionalLight.shadow.mapSize.set(2048, 2048)
 directionalLight.shadow.camera.near = 1
-directionalLight.shadow.camera.far = 50
-directionalLight.shadow.camera.left = -20
-directionalLight.shadow.camera.top = 20
-directionalLight.shadow.camera.right = 20
-directionalLight.shadow.camera.bottom = -20
-directionalLight.position.set(-0.5, 2, -0.5)
+directionalLight.shadow.camera.far = 12
+directionalLight.shadow.camera.left = -40
+directionalLight.shadow.camera.top = 40
+directionalLight.shadow.camera.right = 40
+directionalLight.shadow.camera.bottom = -40
+directionalLight.position.set(-0.5, 10, -0.5)
 scene.add(directionalLight)
+
+// const directionalLightCameraHelper = new CameraHelper(directionalLight.shadow.camera)
+// scene.add(directionalLightCameraHelper)
 
 /**
  * Physics
@@ -153,6 +187,22 @@ box.scale.set(...carSize)
  */
 const gltfLoader = new GLTFLoader()
 gltfLoader.load('/models/CesiumMilkTruck/glTF/CesiumMilkTruck.gltf', gltf => {
+  mixer = new THREE.AnimationMixer(gltf.scene)
+  const action = mixer.clipAction(gltf.animations[0])
+
+  action.play()
+
+  startupSound.currentTime = 0
+  startupSound.volume = 0.2
+  startupSound.play()
+  setTimeout(() => {
+    drivingSound.play()
+    drivingSound.addEventListener('ended', () => {
+      drivingSound.currentTime = 0
+      drivingSound.play()
+    })
+  }, 1000)
+
   // console.log(gltf.scene)
   car = gltf.scene
   console.log(car)
@@ -161,6 +211,7 @@ gltfLoader.load('/models/CesiumMilkTruck/glTF/CesiumMilkTruck.gltf', gltf => {
   car.children[0].children[0].children.forEach(
     child => (child.castShadow = true)
   )
+  controls.target = car.position
   scene.add(gltf.scene)
 })
 
@@ -296,21 +347,46 @@ const tick = () => {
 
   world.step(1 / 60, delta, 3)
   // update the chassis position
-  // box.position.copy(chassisBody.position)
-  // box.quaternion.copy(chassisBody.quaternion)
+  if (box) {
+    box.position.copy(chassisBody.position)
+    box.quaternion.copy(chassisBody.quaternion)
+  }
 
   if (car) {
     car.position.copy(chassisBody.position)
     car.position.y = chassisBody.position.y - 1.5
 
     car.quaternion.copy(chassisBody.quaternion)
+
+    // if(vehicle.currentVehicleSpeedKmHour > 4) {
+    //   camera.position.x = car.position.x + 20
+    //   camera.position.z = car.position.z - 20
+    // }
   }
+
+  if (vehicle.sliding && !isSliding) {
+    tireSound.currentTime = 0
+    tireSound.volume = 0.01
+    tireSound.play()
+    isSliding = true
+  }
+  if (tireSound.paused) {
+    isSliding = false
+  }
+  drivingSound.volume = Math.max(
+    Math.min(Math.abs(vehicle.currentVehicleSpeedKmHour) / 30, 1),
+    0
+  )
 
   // update objects
   objectsToUpdate.forEach(object => {
     object.mesh.position.copy(object.body.position)
     object.mesh.quaternion.copy(object.body.quaternion)
   })
+
+  if (mixer !== null && Math.abs(vehicle.currentVehicleSpeedKmHour) > 4) {
+    mixer.update(delta)
+  }
 
   controls.update()
 
@@ -328,33 +404,35 @@ function navigate(e) {
   vehicle.setBrake(0, 2)
   vehicle.setBrake(0, 3)
 
-  const engineForce = 400
-  const maxSteerVal = 0.7
+  // const engineForce = 400
+  // const maxSteerVal = 0.7
 
-  switch (e.keyCode) {
-    case 38: // forward
-      vehicle.applyEngineForce(keyup ? 0 : -engineForce, 0)
-      vehicle.applyEngineForce(keyup ? 0 : -engineForce, 1)
-      vehicle.applyEngineForce(keyup ? 0 : -engineForce, 2)
-      vehicle.applyEngineForce(keyup ? 0 : -engineForce, 3)
-      break
+  if (e.keyCode === 38) {
+    // forward
+    vehicle.applyEngineForce(keyup ? 0 : -parameters.engineForce, 0)
+    vehicle.applyEngineForce(keyup ? 0 : -parameters.engineForce, 1)
+    vehicle.applyEngineForce(keyup ? 0 : -parameters.engineForce, 2)
+    vehicle.applyEngineForce(keyup ? 0 : -parameters.engineForce, 3)
+  }
 
-    case 40: // backward
-      vehicle.applyEngineForce(keyup ? 0 : engineForce, 0)
-      vehicle.applyEngineForce(keyup ? 0 : engineForce, 1)
-      vehicle.applyEngineForce(keyup ? 0 : engineForce, 2)
-      vehicle.applyEngineForce(keyup ? 0 : engineForce, 3)
-      break
+  if (e.keyCode === 40) {
+    // backward
+    vehicle.applyEngineForce(keyup ? 0 : parameters.engineForce, 0)
+    vehicle.applyEngineForce(keyup ? 0 : parameters.engineForce, 1)
+    vehicle.applyEngineForce(keyup ? 0 : parameters.engineForce, 2)
+    vehicle.applyEngineForce(keyup ? 0 : parameters.engineForce, 3)
+  }
 
-    case 39: // right
-      vehicle.setSteeringValue(keyup ? 0 : -maxSteerVal, 2)
-      vehicle.setSteeringValue(keyup ? 0 : -maxSteerVal, 3)
-      break
+  if (e.keyCode === 39) {
+    // right
+    vehicle.setSteeringValue(keyup ? 0 : -parameters.maxSteerVal, 2)
+    vehicle.setSteeringValue(keyup ? 0 : -parameters.maxSteerVal, 3)
+  }
 
-    case 37: // left
-      vehicle.setSteeringValue(keyup ? 0 : maxSteerVal, 2)
-      vehicle.setSteeringValue(keyup ? 0 : maxSteerVal, 3)
-      break
+  if (e.keyCode === 37) {
+    // left
+    vehicle.setSteeringValue(keyup ? 0 : parameters.maxSteerVal, 2)
+    vehicle.setSteeringValue(keyup ? 0 : parameters.maxSteerVal, 3)
   }
 }
 
@@ -364,9 +442,9 @@ window.addEventListener('keyup', navigate)
 // box
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1)
 const boxMaterial = new THREE.MeshStandardMaterial({
-  metalness: 0.1,
-  roughness: 0.7,
-  color: COLOR.LILAC,
+  metalness: 0,
+  roughness: 1,
+  color: COLOR.ORANGE,
 })
 
 function createBox(width, height, depth, position) {
@@ -381,20 +459,25 @@ function createBox(width, height, depth, position) {
     new CANNON.Vec3(width * 0.5, height * 0.5, depth * 0.5)
   )
   const body = new CANNON.Body({
-    mass: 1,
+    mass: 6,
     position: new CANNON.Vec3(0, 4, 0),
     shape,
     material: defaultMaterial,
   })
   body.position.copy(position)
-  // body.addEventListener('collide', playSound)
+  body.addEventListener('collide', playSound)
   world.addBody(body)
 
   objectsToUpdate.push({ mesh, body })
 }
 
-const wall = Array(18)
+const wall = Array(78)
   .fill(0)
   .forEach((_, i, arr) => {
-    createBox(1, 1, 1, { x: (i % 6) - 3, y: Math.floor(i / 6) + 0.5, z: 10 })
+    createBox(1, 1, 1, { x: (i % 13) - 6.5, y: Math.floor(i / 13) + 0.7, z: 30 })
   })
+// const wall2 = Array(42)
+//   .fill(0)
+//   .forEach((_, i, arr) => {
+//     createBox(1, 1, 1, { x: (i % 6) - 3, y: Math.floor(i / 6) + 0.5, z: 21.1 })
+//   })
