@@ -31,8 +31,9 @@ window.addEventListener('click', () => {
   if (currentIntersect) {
     const currentIntersectBody = objectsToUpdate.find(obj => obj.mesh === currentIntersect.object).body
     // currentIntersect.object.material.color.set(COLOR.GREEN)
-    
-    currentIntersectBody.applyForce(new CANNON.Vec3(0, 100, 0), currentIntersectBody.position)
+    const randomX = (Math.random() - 0.5) * 300
+    const randomZ = (Math.random() - 0.5) * 300
+    currentIntersectBody.applyForce(new CANNON.Vec3(randomX, 600, randomZ), currentIntersect.object.position)
   }
 })
 
@@ -123,7 +124,7 @@ function createSphere(radius, position) {
 
   const shape = new CANNON.Sphere(radius)
   const body = new CANNON.Body({
-    mass: 0.5,
+    mass: 1,
     position: new CANNON.Vec3(0, 4, 0),
     shape,
     material: defaultMaterial,
@@ -155,7 +156,7 @@ function createBox(width, height, depth, position) {
     new CANNON.Vec3(width * 0.5, height * 0.5, depth * 0.5)
   )
   const body = new CANNON.Body({
-    mass: 1.5,
+    mass: 1,
     position: new CANNON.Vec3(0, 4, 0),
     shape,
     material: defaultMaterial,
@@ -170,7 +171,8 @@ function createBox(width, height, depth, position) {
 /**
  * three js
  */
-createSphere(0.5, { x: 0, y: 3, z: 0 })
+createSphere(0.5, { x: 0, y: 6, z: 0 })
+createBox(1, 1, 1, { x: 0.3, y: 4.5, z: 0.4 })
 
 const plane = new THREE.Mesh(
   new THREE.PlaneGeometry(10, 10),
@@ -189,12 +191,12 @@ const raycaster = new THREE.Raycaster()
 
 // camera
 const camera = new THREE.PerspectiveCamera(
-  75,
+  45,
   sizes.width / sizes.height,
   0.1,
   10000
 )
-camera.position.set(-10, 15, 5)
+camera.position.set(-10, 15, 20)
 scene.add(camera)
 
 // renderer
