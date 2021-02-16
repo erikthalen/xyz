@@ -183,7 +183,6 @@ const plane = new THREE.Mesh(
 )
 plane.receiveShadow = true
 plane.rotation.x = -Math.PI * 0.5
-
 scene.add(plane)
 
 // raycaster

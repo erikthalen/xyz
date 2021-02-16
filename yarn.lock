@@ -1865,7 +1865,6 @@ caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001181:
 cannon-es@^0.16.0:
   version "0.16.0"
   resolved "https://registry.yarnpkg.com/cannon-es/-/cannon-es-0.16.0.tgz#de9064970e65fe65a271ddb43a98d097edf25389"
-  integrity sha512-hSK5Y0B7dlXMV1SwSIID1lcNoZYvIbHzhLMlBLqe6oLSo0jdR07H/rsKDBmlyayWGjX4lZXV9iZb+AzomzCjXA==
 
 caseless@~0.12.0:
   version "0.12.0"

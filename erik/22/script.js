@@ -3,7 +3,6 @@ import { COLOR, SCREEN_SIZE, HPD } from '~/utils/const'
 import { enableFullViewportOnResize } from '~/utils/events'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 
 // globals
 let mixer = null
@@ -23,37 +22,16 @@ directionalLight.position.set(0, 3, 2)
 scene.add(directionalLight)
 
 // models
-const dracoLoader = new DRACOLoader()
-dracoLoader.setDecoderPath('/draco/')
-
 const gltfLoader = new GLTFLoader()
-gltfLoader.setDRACOLoader(dracoLoader)
-
-// duck
-gltfLoader.load(
-  '/models/Duck/glTF-Draco/Duck.gltf', // draco compressed version
-  gltf => {
-    // add all children of the imported model, to our scene
-    ;[...gltf.scene.children].forEach(child => {
-      child.position.x = -2
-      scene.add(child)
-    })
-  },
-  progress => console.log(progress),
-  error => console.warn(error)
-)
 
 // fox
 gltfLoader.load('/models/Fox/glTF/Fox.gltf', gltf => {
-  // console.log(gltf.animations)
   mixer = new THREE.AnimationMixer(gltf.scene)
   const action = mixer.clipAction(gltf.animations[1])
 
   action.play()
 
-  // add the whole scene (all children)
   gltf.scene.scale.set(0.025, 0.025, 0.025)
-  gltf.scene.position.x = 2
   scene.add(gltf.scene)
 })
 

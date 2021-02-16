@@ -19,6 +19,17 @@ body {
 
 p {
     display: inline-block;
+    margin-bottom: 1em;
+}
+
+ul {
+    margin: 0 0 1em 2em;
+    list-style: none;
+    line-height: 1.6;
+}
+
+.toc {
+    margin: 1em;
 }
 
 #app {
