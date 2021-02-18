@@ -26,10 +26,11 @@ const parameters = {
   width: 2.2,
   height: 2.25,
   depth: 4.85,
-  engineForce: 300,
+  engineForce: 400,
   maxSteerVal: 0.8,
 }
 const gui = new dat.GUI()
+gui.hide()
 
 // const updateCarSize = () => {
 //   console.log(chassisBody, box)
@@ -175,7 +176,6 @@ chassisBody.angularVelocity.set(0, 0, 0) // initial velocity
 // car visual body
 var geometry = new THREE.BoxGeometry(1, 1, 1) // double chasis shape
 var material = new THREE.MeshNormalMaterial({
-  color: COLOR.RED,
   side: THREE.DoubleSide,
 })
 box = new THREE.Mesh(geometry, material)
@@ -195,13 +195,15 @@ gltfLoader.load('/models/CesiumMilkTruck/glTF/CesiumMilkTruck.gltf', gltf => {
   startupSound.currentTime = 0
   startupSound.volume = 0.2
   startupSound.play()
-  setTimeout(() => {
-    drivingSound.play()
-    drivingSound.addEventListener('ended', () => {
-      drivingSound.currentTime = 0
-      drivingSound.play()
-    })
-  }, 1000)
+  // setTimeout(() => {
+  //   drivingSound.play()
+  //   drivingSound.addEventListener('ended', () => {
+  //     drivingSound.currentTime = 0
+  //     setTimeout(() => {
+  //       drivingSound.play()
+  //     }, 100)
+  //   })
+  // }, 1000)
 
   // console.log(gltf.scene)
   car = gltf.scene
@@ -366,7 +368,7 @@ const tick = () => {
 
   if (vehicle.sliding && !isSliding) {
     tireSound.currentTime = 0
-    tireSound.volume = 0.01
+    tireSound.volume = 0.1
     tireSound.play()
     isSliding = true
   }
@@ -459,7 +461,7 @@ function createBox(width, height, depth, position) {
     new CANNON.Vec3(width * 0.5, height * 0.5, depth * 0.5)
   )
   const body = new CANNON.Body({
-    mass: 6,
+    mass: 4,
     position: new CANNON.Vec3(0, 4, 0),
     shape,
     material: defaultMaterial,
@@ -474,7 +476,11 @@ function createBox(width, height, depth, position) {
 const wall = Array(78)
   .fill(0)
   .forEach((_, i, arr) => {
-    createBox(1, 1, 1, { x: (i % 13) - 6.5, y: Math.floor(i / 13) + 0.7, z: 30 })
+    const y = Math.floor(i / 13) + 0.7
+    const x = (i % 13) - 6.5 + (Math.floor(i / 13) % 2 === 0 ? -0.25 : 0.25)
+    const z = 30
+    
+    createBox(1, 1, 1, { x, y, z })
   })
 // const wall2 = Array(42)
 //   .fill(0)
