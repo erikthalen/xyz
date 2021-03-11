@@ -1,0 +1,117 @@
+:root {
+    --header-z-index: 3;
+    --content-z-index: 2;
+    --hero-z-index: 1;
+}
+
+body {
+    font-size: 14px;
+    color: #222;
+    font-family: helvetica;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+
+.hero {
+    height: 200vh;
+    position: fixed;
+    top: 0;
+    z-index: var(--nav-z-index);
+}
+
+h2 {
+    max-width: 18em;
+    margin-bottom: 2em;
+}
+
+.titles {
+    margin-top: 15vh;
+    position: absolute;
+    margin-left: 53px;
+}
+
+.title {
+    margin-bottom: 100vh;
+    font-size: calc(40px + 10vw);
+    max-width: 4em;
+    line-height: 0.9;
+}
+
+.hero .webgl {
+    /* position: sticky;
+    top: 0; */
+}
+
+header {
+    position: fixed;
+    top: 0px;
+    z-index: var(--header-z-index);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+
+    pointer-events: none;
+}
+
+header .logo-box {
+    position: relative;
+}
+
+header .logo {
+    filter: saturate(0) brightness(0.2);
+    width: 100px;
+}
+
+header .name {
+    position: absolute;
+    top: 42px;
+    left: 73px;
+}
+
+header ul {
+    margin: 0;
+    display: flex;
+    list-style: none;
+}
+
+header li {
+    margin-right: 35px;
+}
+
+main {
+    position: relative;
+    z-index: var(--content-z-index);
+
+    padding: 100px;
+
+    margin-top: 200vh;
+
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+}
+
+main .box {
+    flex-shrink: 0;
+    max-width: 1440px;
+    margin-bottom: calc(56px * (1.63 * 2));
+}
+
+main .box:nth-child(even) {
+    margin-left: auto;
+}
+
+main h1 {
+    font-size: 56px;
+    margin-bottom: 0.63em;
+}
+
+main p {
+    font-size: calc(56px * 0.63);
+    max-width: 20em;
+}

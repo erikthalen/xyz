@@ -8,6 +8,8 @@ body {
     font-size: 20px;
     
     overflow: hidden;
+
+    /* cursor: none; */
 }
 
 * {

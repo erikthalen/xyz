@@ -9,8 +9,15 @@ const parameters = {
   boxColor: COLOR.RED,
   spin: () => {
     gsap.to(mesh.rotation, {
-      duration: 2,
+      duration: 5,
       y: mesh.rotation.y + Math.PI,
+      ease: 'elastic.out(0.2, 0.3)',
+    })
+  },
+  spinBack: () => {
+    gsap.to(mesh.rotation, {
+      duration: 5,
+      y: mesh.rotation.y + -Math.PI,
       ease: 'elastic.out(0.2, 0.3)',
     })
   },
@@ -20,6 +27,7 @@ const parameters = {
 const gui = new dat.GUI()
 
 gui.add(parameters, 'spin')
+gui.add(parameters, 'spinBack')
 
 // sizes
 let sizes = SCREEN_SIZE()

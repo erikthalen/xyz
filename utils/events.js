@@ -29,7 +29,7 @@ export const enableFullViewportOnResize = (camera, renderer, cb) => {
     camera.updateProjectionMatrix()
     renderer.setSize(width, height)
     renderer.setPixelRatio(Math.min(HPD ? window.devicePixelRatio : 1, 2))
-    cb()
+    typeof cb === 'function' && cb()
   })
 }
 
