@@ -476,8 +476,8 @@ function createBox(width, height, depth, position) {
 const wall = Array(78)
   .fill(0)
   .forEach((_, i, arr) => {
-    const y = Math.floor(i / 13) + 0.7
     const x = (i % 13) - 6.5 + (Math.floor(i / 13) % 2 === 0 ? -0.25 : 0.25)
+    const y = Math.floor(i / 13) + 0.7
     const z = 30
     
     createBox(1, 1, 1, { x, y, z })
