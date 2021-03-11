@@ -9,7 +9,7 @@ export const COLOR = {
   LILAC: 0xffc6ff,
   WHITE: 0xfffffc,
   GREY: 0xececec,
-  BLACK: 0x232323,
+  BLACK: 0x131313,
 }
 
 export const SCREEN_SIZE = () => ({
@@ -17,4 +17,4 @@ export const SCREEN_SIZE = () => ({
   height: window.innerHeight,
 })
 
-export const HPD = true
+export const HPD = false
