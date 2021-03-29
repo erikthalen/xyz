@@ -13,19 +13,56 @@ let s = SCREEN_SIZE()
 const gui = new dat.GUI()
 const parameters = {}
 
+// loaders
+const textureLoader = new THREE.TextureLoader()
+
 // scene
 const scene = new THREE.Scene()
-scene.background = new THREE.Color(COLOR.BLACK)
+scene.background = new THREE.Color(COLOR.WHITE)
+
+// textures
+const flagTexture = textureLoader.load('/textures/sweden.jpg')
 
 // mesh
 const geometry = new THREE.PlaneGeometry(1, 1, 32, 32)
-const material = new THREE.RawShaderMaterial({
+
+const count = geometry.attributes.position.count
+const randoms = new Float32Array(count).fill(0).map(Math.random)
+
+geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1))
+
+const material = new THREE.ShaderMaterial({
   vertexShader,
   fragmentShader,
   side: THREE.DoubleSide,
+  uniforms: {
+    uFrequency: { value: new THREE.Vector2(10, 5) },
+    uTime: { value: 0 },
+    uColor: { value: new THREE.Color(COLOR.BLUE) },
+    uTexture: { value: flagTexture },
+    uIsFlag: { value: true }
+  },
 })
+const material2 = new THREE.ShaderMaterial({
+  vertexShader,
+  fragmentShader,
+  side: THREE.DoubleSide,
+  uniforms: {
+    uFrequency: { value: new THREE.Vector2(10, 5) },
+    uTime: { value: 0 },
+    uColor: { value: new THREE.Color(COLOR.BLUE) },
+    uIsFlag: { value: false }
+  },
+})
+
 const mesh = new THREE.Mesh(geometry, material)
+mesh.scale.y = 2 / 3
+mesh.position.x -= 1
 scene.add(mesh)
+
+const mesh2 = new THREE.Mesh(geometry, material2)
+mesh2.position.x += 1
+scene.add(mesh2)
 
 // camera
 const camera = new THREE.PerspectiveCamera(45, s.width / s.height, 0.1, 1000)
@@ -54,7 +91,9 @@ const clock = new THREE.Clock()
 
 // tick
 const tick = () => {
-  const delta = clock.getDelta()
+  const time = clock.getElapsedTime()
+
+  material.uniforms.uTime.value = time
 
   controls.update()
   renderer.render(scene, camera)

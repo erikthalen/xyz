@@ -25,7 +25,6 @@
     "three": "^0.125.2"
   },
   "devDependencies": {
-    "parcel": "^2.0.0-beta.1",
-    "parcel-plugin-glsl": "^0.1.0"
+    "parcel": "^2.0.0-beta.1"
   }
 }
